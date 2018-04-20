@@ -38,7 +38,7 @@ perl DeNSe/eval08.pl -g DeNSe/data/dev_gold -s DeNSe/data/dev_pred > result_dev.
 perl DeNSe/eval08.pl -g DeNSe/data/test_gold -s DeNSe/data/test_pred > result_test.txt
 ```
 
-The trained model are saved in `DeNSe/models`
+The trained model is saved in `DeNSe/models`
 
 ## Performance
 
