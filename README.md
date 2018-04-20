@@ -1,4 +1,7 @@
 # Neural-based Dependency Parser ([Dependency Parsing as Head Selection](http://aclweb.org/anthology/E17-1063), Zhang et al., EACL 2017)
+
+This is a PyTorch implementation of the neural-based dependency parser as in [Dependency Parsing as Head Selection](http://aclweb.org/anthology/E17-1063) achieved nearly state-of-the-art on dependency parsing in early 2017.
+
 ## Requirements
 ### Framework
  - python (<= 3.6)
@@ -45,3 +48,19 @@ The trained model are saved in `DeNSe/models`
 | TEST | 94.02 | 94.13 |
 
 The training time is approximately 9 minutes for 5 iterations with the batch size equal to 16.
+
+## Reference
+
+```
+@InProceedings{zhang-cheng-lapata:2017:EACLlong,
+  author    = {Zhang, Xingxing  and  Cheng, Jianpeng  and  Lapata, Mirella},
+  title     = {Dependency Parsing as Head Selection},
+  booktitle = {Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 1, Long Papers},
+  month     = {April},
+  year      = {2017},
+  address   = {Valencia, Spain},
+  publisher = {Association for Computational Linguistics},
+  pages     = {665--676},
+  url       = {http://www.aclweb.org/anthology/E17-1063}
+}
+```
