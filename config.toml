@@ -1,0 +1,7 @@
+[config]
+n_epochs = 5
+batch_size = 16
+word_emb_size = 300
+pos_emb_size = 300
+hidden_size = 300
+learning_rate = 1e-3
