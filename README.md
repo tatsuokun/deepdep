@@ -15,12 +15,11 @@ This is a PyTorch implementation of the neural-based dependency parser as in [De
  You can install these packages by `pip instlall -r requirements.txt`.
  
 ### Dataset
-Put conllx format dataset (for example PTB English as in the original paper) in `DeNSe/data/`
+Put conllx format dataset (for example PTB English as in the original paper) in `deepdep/data`
 
 If you want to run this program quickly, please make your directory structure as below.
  ```
-DeNSe
-│
+deepdep
 │
 ├ data
 │　└ ptb.conllx
@@ -28,17 +27,19 @@ DeNSe
 │　   ├ dev.conllx.txt
 │　   └ test.conllx.txt
 │
+DeNSe
+│
 ```
 
 ## How to run
 
 ```
 python -m DeNSe --config config.toml --gpu-id 0
-perl DeNSe/eval08.pl -g DeNSe/data/dev_gold -s DeNSe/data/dev_pred > result_dev.txt
-perl DeNSe/eval08.pl -g DeNSe/data/test_gold -s DeNSe/data/test_pred > result_test.txt
+perl DeNSe/eval08.pl -g data/dev_gold -s data/dev_pred > result_dev.txt
+perl DeNSe/eval08.pl -g data/test_gold -s data/test_pred > result_test.txt
 ```
 
-The trained model is saved in `DeNSe/models`
+The trained model is saved in `deepdep/models`
 
 ## Performance
 
@@ -47,8 +48,7 @@ The trained model is saved in `DeNSe/models`
 | DEV | 94.17 | 94.18 |
 | TEST | 94.02 | 94.13 |
 
-The training time is approximately 9 minutes for 5 iterations with the batch size equal to 16.
-
+The estimated training time is approximately 9 minutes for 5 iterations with the batch size equal to 16. (I used TITAN X)
 ## Reference
 
 ```
