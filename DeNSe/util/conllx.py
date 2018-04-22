@@ -2,7 +2,7 @@ import os
 from DeNSe.util.const import Phase
 
 
-def load_ptb_conllx(dir_path='DeNSe/data/ptb.conllx'):
+def load_ptb_conllx(dir_path='data/ptb.conllx'):
     ptb = {}
     for phase in [Phase.TRAIN, Phase.DEV, Phase.TEST]:
         file_name = phase.value + '.conllx.txt'

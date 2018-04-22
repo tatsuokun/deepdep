@@ -14,11 +14,11 @@ from DeNSe.util.model_func import save_model
 
 def main():
 
-    dataset_dir = 'DeNSe/data'
+    dataset_dir = 'data'
     if not os.path.exists(dataset_dir):
         os.mkdir(dataset_dir)
 
-    model_dir = 'DeNSe/models'
+    model_dir = 'models'
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
 
@@ -66,8 +66,8 @@ def main():
                             'DEV Loss: {:.2f}'.format(dev_loss)])
         print(logger)
 
-    output_conllx_format(sentences, poss, golds, 'DeNSe/data/dev_gold')
-    output_conllx_format(sentences, poss, preds, 'DeNSe/data/dev_pred')
+    output_conllx_format(sentences, poss, golds, 'data/dev_gold')
+    output_conllx_format(sentences, poss, preds, 'data/dev_pred')
 
     _, sentences, poss, golds, preds, _ = train(data_test,
                                                 parser,
@@ -77,8 +77,8 @@ def main():
                                                 Phase.TEST,
                                                 use_cuda)
 
-    output_conllx_format(sentences, poss, golds, 'DeNSe/data/test_gold')
-    output_conllx_format(sentences, poss, preds, 'DeNSe/data/test_pred')
+    output_conllx_format(sentences, poss, golds, 'data/test_gold')
+    output_conllx_format(sentences, poss, preds, 'data/test_pred')
 
     model_config_name = os.path.join(model_dir, 'model_config.toml')
     output_model_config(batch_size=config.batch_size,
