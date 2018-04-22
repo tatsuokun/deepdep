@@ -5,3 +5,8 @@ word_emb_size = 300
 pos_emb_size = 300
 hidden_size = 300
 learning_rate = 1e-3
+
+[dataset]
+train_file = 'data/ptb.conllx/train.conllx.txt'
+dev_file = 'data/ptb.conllx/dev.conllx.txt'
+test_file = 'data/ptb.conllx/test.conllx.txt'

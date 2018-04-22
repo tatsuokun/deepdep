@@ -17,6 +17,12 @@ class Config:
         self.hidden_size = int(trainer.get('hidden_size', 300))
         self.learning_rate = float(trainer.get('learning_rate', 1e-3))
 
+        dataset = config.get('dataset', {})
+        self.train_file = dataset.get('train_file', '')
+        self.dev_file = dataset.get('dev_file', '')
+        self.test_file = dataset.get('test_file', '')
+        assert self.train_file, 'make sure your train/dev/test files in ' + self.filename
+
 
 class ModelConfig:
 

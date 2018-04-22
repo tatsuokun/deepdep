@@ -1,12 +1,19 @@
-import os
 from DeNSe.util.const import Phase
 
 
-def load_ptb_conllx(dir_path='data/ptb.conllx'):
+def load_ptb_conllx(train_file_name: str,
+                    dev_file_name: str,
+                    test_file_name: str):
     ptb = {}
+
     for phase in [Phase.TRAIN, Phase.DEV, Phase.TEST]:
-        file_name = phase.value + '.conllx.txt'
-        file_path = os.path.join(dir_path, file_name)
+        if phase == Phase.TRAIN:
+            file_path = train_file_name
+        elif phase == Phase.DEV:
+            file_path = dev_file_name
+        else:
+            file_path = test_file_name
+
         ptb[phase] = {}
         sentence = []
         pos_seq = []
@@ -14,6 +21,7 @@ def load_ptb_conllx(dir_path='data/ptb.conllx'):
         token = []
         pos = []
         head = []
+
         with open(file_path, mode='r') as f:
             for line in f:
                 contents = line.split('\t')

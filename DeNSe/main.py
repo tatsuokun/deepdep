@@ -14,7 +14,7 @@ from DeNSe.util.model_func import save_model
 
 def main():
 
-    dataset_dir = 'data'
+    dataset_dir = 'results'
     if not os.path.exists(dataset_dir):
         os.mkdir(dataset_dir)
 
@@ -29,7 +29,7 @@ def main():
     use_cuda = torch.cuda.is_available() and gpu_id > -1
     use_pos = True  # TODO; move to args
 
-    ptb = load_ptb_conllx()
+    ptb = load_ptb_conllx(config.train_file, config.dev_file, config.test_file)
     data_train, data_dev, data_test = \
         create_dataset(ptb, batch_size=config.batch_size, device=gpu_id)
     parser = DependencyParser(vocab=data_train.vocab,
@@ -45,6 +45,7 @@ def main():
 
     optimizer = optim.Adam(parser.parameters(), lr=config.learning_rate)
 
+    print('start training')
     for epoch in range(config.n_epochs):
         train_loss, _, _, _, _, _ = train(data_train,
                                           parser,
@@ -66,8 +67,8 @@ def main():
                             'DEV Loss: {:.2f}'.format(dev_loss)])
         print(logger)
 
-    output_conllx_format(sentences, poss, golds, 'data/dev_gold')
-    output_conllx_format(sentences, poss, preds, 'data/dev_pred')
+    output_conllx_format(sentences, poss, golds, 'results/dev_gold')
+    output_conllx_format(sentences, poss, preds, 'results/dev_pred')
 
     _, sentences, poss, golds, preds, _ = train(data_test,
                                                 parser,
@@ -77,8 +78,8 @@ def main():
                                                 Phase.TEST,
                                                 use_cuda)
 
-    output_conllx_format(sentences, poss, golds, 'data/test_gold')
-    output_conllx_format(sentences, poss, preds, 'data/test_pred')
+    output_conllx_format(sentences, poss, golds, 'results/test_gold')
+    output_conllx_format(sentences, poss, preds, 'results/test_pred')
 
     model_config_name = os.path.join(model_dir, 'model_config.toml')
     output_model_config(batch_size=config.batch_size,
