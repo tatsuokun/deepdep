@@ -30,7 +30,7 @@ deepdep
 │　   ├ dev.conllx.txt
 │　   └ test.conllx.txt
 │
-DeNSe
+├ DeNSe
 │
 ```
 
