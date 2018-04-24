@@ -8,7 +8,7 @@ from DeNSe.util.args import parse_args
 from DeNSe.util.batch import create_dataset
 from DeNSe.util.config import Config, output_model_config, save_vocab
 from DeNSe.util.const import Phase
-from DeNSe.util.conllx import load_ptb_conllx, output_conllx_format
+from DeNSe.util.conllx import load_conllx, output_conllx_format
 from DeNSe.util.model_func import save_model
 
 
@@ -29,7 +29,13 @@ def main():
     use_cuda = torch.cuda.is_available() and gpu_id > -1
     use_pos = True  # TODO; move to args
 
-    ptb = load_ptb_conllx(config.train_file, config.dev_file, config.test_file)
+    ptb_train = load_conllx(config.train_file)
+    ptb_dev = load_conllx(config.dev_file)
+    ptb_test = load_conllx(config.test_file)
+    ptb = {Phase.TRAIN: ptb_train, Phase.DEV: ptb_dev, Phase.TEST: ptb_test}
+    print(ptb)
+    quit()
+
     data_train, data_dev, data_test = \
         create_dataset(ptb, batch_size=config.batch_size, device=gpu_id)
     parser = DependencyParser(vocab=data_train.vocab,

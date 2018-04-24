@@ -1,47 +1,34 @@
-from DeNSe.util.const import Phase
+def load_conllx(file_name: str):
 
+    conllx = {}
+    sentence = []
+    pos_seq = []
+    heads_seq = []
+    token = []
+    pos = []
+    head = []
 
-def load_ptb_conllx(train_file_name: str,
-                    dev_file_name: str,
-                    test_file_name: str):
-    ptb = {}
+    with open(file_name, mode='r') as f:
+        for line in f:
+            contents = line.split('\t')
+            if contents[0].isdigit():
+                token.append(contents[1])
+                pos.append(contents[3])
+                head.append(int(contents[-1].strip()))
+            else:
+                # end of sentence
+                sentence.append(token)
+                pos_seq.append(pos)
+                heads_seq.append(head)
+                token = []
+                pos = []
+                head = []
+                continue
+    conllx['sentence'] = sentence
+    conllx['pos'] = pos_seq
+    conllx['head'] = heads_seq
 
-    for phase in [Phase.TRAIN, Phase.DEV, Phase.TEST]:
-        if phase == Phase.TRAIN:
-            file_path = train_file_name
-        elif phase == Phase.DEV:
-            file_path = dev_file_name
-        else:
-            file_path = test_file_name
-
-        ptb[phase] = {}
-        sentence = []
-        pos_seq = []
-        heads_seq = []
-        token = []
-        pos = []
-        head = []
-
-        with open(file_path, mode='r') as f:
-            for line in f:
-                contents = line.split('\t')
-                if contents[0].isdigit():
-                    token.append(contents[1])
-                    pos.append(contents[3])
-                    head.append(int(contents[-1].strip()))
-                else:
-                    # end of sentence
-                    sentence.append(token)
-                    pos_seq.append(pos)
-                    heads_seq.append(head)
-                    token = []
-                    pos = []
-                    head = []
-                    continue
-        ptb[phase]['sentence'] = sentence
-        ptb[phase]['pos'] = pos_seq
-        ptb[phase]['head'] = heads_seq
-    return ptb
+    return conllx
 
 
 def output_conllx_format(sentences, poss, heads, output_file_name, pad_token='<pad>'):
