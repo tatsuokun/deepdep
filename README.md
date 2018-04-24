@@ -12,7 +12,7 @@ This is a PyTorch implementation of the neural-based dependency parser as in [De
  - torchtext
  - toml
  
- You can install these packages by `pip instlall -r requirements.txt`.
+ You can install these packages by `pip install -r requirements.txt`.
  
 ### Dataset
 Put conllx format dataset (for example PTB English as in the original paper) in `deepdep/data`.
@@ -30,7 +30,7 @@ deepdep
 │　   ├ dev.conllx.txt
 │　   └ test.conllx.txt
 │
-DeNSe
+├ DeNSe
 │
 ```
 
