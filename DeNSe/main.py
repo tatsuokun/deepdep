@@ -33,8 +33,6 @@ def main():
     ptb_dev = load_conllx(config.dev_file)
     ptb_test = load_conllx(config.test_file)
     ptb = {Phase.TRAIN: ptb_train, Phase.DEV: ptb_dev, Phase.TEST: ptb_test}
-    print(ptb)
-    quit()
 
     data_train, data_dev, data_test = \
         create_dataset(ptb, batch_size=config.batch_size, device=gpu_id)
