@@ -5,15 +5,18 @@ from torch.autograd import Variable
 
 class DependencyParser(nn.Module):
     def __init__(self,
-                 vocab: int,
-                 n_pos: int,
+                 vocab,
+                 pos,
                  word_embed_size: int,
                  pos_embed_size: int,
                  hidden_size: int,
                  use_pos: bool,
-                 use_cuda: bool):
+                 use_cuda: bool,
+                 inference: bool):
 
         super(DependencyParser, self).__init__()
+        self.vocab_size = len(vocab)
+        self.pos_size = len(pos)
         self.word_embed_size = word_embed_size
         self.hidden_size = hidden_size
         self.pos_embed_size = pos_embed_size if use_pos else 0
@@ -22,12 +25,13 @@ class DependencyParser(nn.Module):
         self.use_pos = use_pos
         self.use_cuda = use_cuda
 
-        self.word_emb = nn.Embedding(len(vocab),
+        self.word_emb = nn.Embedding(self.vocab_size,
                                      word_embed_size,
                                      padding_idx=0)
-        self.word_emb.weight.data.copy_(vocab.vectors)
+        if not inference:
+            self.word_emb.weight.data.copy_(vocab.vectors)
         if self.use_pos:
-            self.pos_emb = nn.Embedding(n_pos,
+            self.pos_emb = nn.Embedding(self.pos_size,
                                         pos_embed_size,
                                         padding_idx=0)
         self.bilstm = nn.LSTM(self.bilstm_input_size,
@@ -42,7 +46,7 @@ class DependencyParser(nn.Module):
         self.v_a_inv = nn.Linear(self.bilstm_output_size, 1, bias=False)
         self.criterion = nn.NLLLoss(ignore_index=-1)
 
-    def forward(self, input_tokens, input_pos, input_head, phase, output_loss=True):
+    def forward(self, input_tokens, input_pos, input_head, phase, compute_loss=True):
         loss = 0.0
         batch_size, seq_len = input_tokens.size()
         self.init_hidden(batch_size, use_cuda=self.use_cuda)
@@ -60,7 +64,7 @@ class DependencyParser(nn.Module):
             target = output[:, i, :].expand(seq_len, batch_size, -1).transpose(0, 1)
             mask = output.eq(target)[:, :, 0].unsqueeze(2)
             p_head = self.attention(output, target, mask)
-            if output_loss:
+            if compute_loss:
                 loss += self.compute_loss(p_head.squeeze(), input_head[:, i])
             parent_prob_table.append(torch.exp(p_head))
 
@@ -81,7 +85,7 @@ class DependencyParser(nn.Module):
         function_g = \
             self.v_a_inv(torch.tanh(self.u_a(source) + self.w_a(target)))
         if mask is not None:
-            function_g.masked_fill_(mask, -1e3)
+            function_g.masked_fill_(mask, -1e4)
         return nn.functional.log_softmax(function_g, dim=1)
 
     def init_hidden(self, batch_size, use_cuda):

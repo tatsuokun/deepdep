@@ -3,38 +3,38 @@ from torchtext.vocab import GloVe
 from DeNSe.util.const import Phase
 
 
-def create_dataset(pbt: dict, batch_size: int, device: int):
+def create_dataset(data: dict, batch_size: int, device: int):
 
-    train = PBT(pbt[Phase.TRAIN]['sentence'],
-                pbt[Phase.TRAIN]['pos'],
-                pbt[Phase.TRAIN]['head'],
-                vocab=None,
-                posset=None,
-                batch_size=batch_size,
-                device=device,
-                phase=Phase.TRAIN)
+    train = Dataset(data[Phase.TRAIN]['sentence'],
+                    data[Phase.TRAIN]['pos'],
+                    data[Phase.TRAIN]['head'],
+                    vocab=None,
+                    posset=None,
+                    batch_size=batch_size,
+                    device=device,
+                    phase=Phase.TRAIN)
 
-    dev = PBT(pbt[Phase.DEV]['sentence'],
-              pbt[Phase.DEV]['pos'],
-              pbt[Phase.DEV]['head'],
-              vocab=train.vocab,
-              posset=train.posset,
-              batch_size=batch_size,
-              device=device,
-              phase=Phase.DEV)
+    dev = Dataset(data[Phase.DEV]['sentence'],
+                  data[Phase.DEV]['pos'],
+                  data[Phase.DEV]['head'],
+                  vocab=train.vocab,
+                  posset=train.posset,
+                  batch_size=batch_size,
+                  device=device,
+                  phase=Phase.DEV)
 
-    test = PBT(pbt[Phase.TEST]['sentence'],
-               pbt[Phase.TEST]['pos'],
-               pbt[Phase.TEST]['head'],
-               vocab=train.vocab,
-               posset=train.posset,
-               batch_size=batch_size,
-               device=device,
-               phase=Phase.TEST)
+    test = Dataset(data[Phase.TEST]['sentence'],
+                   data[Phase.TEST]['pos'],
+                   data[Phase.TEST]['head'],
+                   vocab=train.vocab,
+                   posset=train.posset,
+                   batch_size=batch_size,
+                   device=device,
+                   phase=Phase.TEST)
     return train, dev, test
 
 
-class PBT:
+class Dataset:
     def __init__(self,
                  sentences: list,
                  pos_list: list,
@@ -44,8 +44,7 @@ class PBT:
                  batch_size: int,
                  device: int,
                  phase: Phase):
-        assert (len(sentences) == len(pos_list)) and \
-               (len(sentences) == len(heads_list)), \
+        assert len(sentences) == len(pos_list), \
             'the number of sentences and the number of POS/head sequences \
              should be the same length'
 
@@ -75,7 +74,6 @@ class PBT:
         else:
             self.pos_field.vocab = posset
             self.posset = posset
-        self.n_pos = len(self.posset.stoi) + 1  # +1 for padding
 
         self._set_batch_iter(batch_size, phase)
 

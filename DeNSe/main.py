@@ -37,12 +37,13 @@ def main():
     data_train, data_dev, data_test = \
         create_dataset(ptb, batch_size=config.batch_size, device=gpu_id)
     parser = DependencyParser(vocab=data_train.vocab,
-                              n_pos=data_train.n_pos,
+                              pos=data_train.posset,
                               word_embed_size=config.word_embed_size,
                               pos_embed_size=config.pos_embed_size,
                               hidden_size=config.hidden_size,
                               use_pos=use_pos,
-                              use_cuda=use_cuda)
+                              use_cuda=use_cuda,
+                              inference=False)
     if use_cuda:
         torch.cuda.set_device(gpu_id)
         parser = parser.cuda()
@@ -87,7 +88,6 @@ def main():
 
     model_config_name = os.path.join(model_dir, 'model_config.toml')
     output_model_config(batch_size=config.batch_size,
-                        n_pos=data_train.n_pos,
                         word_embed_size=config.word_embed_size,
                         pos_embed_size=config.pos_embed_size,
                         hidden_size=config.hidden_size,
@@ -101,3 +101,5 @@ def main():
     save_model(optimizer, optim_params_name)
     vocab_file_name = os.path.join(model_dir, 'vocab.pkl')
     save_vocab(data_train.vocab, vocab_file_name)
+    posset_file_name = os.path.join(model_dir, 'posset.pkl')
+    save_vocab(data_train.posset, posset_file_name)
