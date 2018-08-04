@@ -8,7 +8,8 @@ def train(dataset,
           batch_size,
           n_epoch,
           phase,
-          use_cuda):
+          use_cuda,
+          compute_loss=True):
 
     total_loss = 0.0
     tokens = []
@@ -25,14 +26,21 @@ def train(dataset,
         sentence = getattr(batch, 'token')
         pos = getattr(batch, 'pos')
         gold_head = getattr(batch, 'head')
+        if use_cuda:
+            # exclude a ROOT token/tag from sentence
+            raw_sentences = dataset.get_raw_sentence(sentence.data.cpu()[:, :].numpy())
+        else:
+            # exclude a ROOT token/tag from sentence
+            raw_sentences = dataset.get_raw_sentence(sentence.data[:, :].numpy())
         _, seq_len = sentence.size()
 
-        loss, pred, parent_prob_table = parser(sentence, pos, gold_head, phase)
+        loss, pred, parent_prob_table = \
+            parser(sentence, raw_sentences, pos, gold_head, phase, compute_loss=compute_loss)
 
         if phase == Phase.TRAIN:
             optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad_norm(parser.parameters(), max_norm=5)
+            torch.nn.utils.clip_grad_norm_(parser.parameters(), max_norm=5)
             optimizer.step()
 
         if use_cuda:
@@ -49,13 +57,12 @@ def train(dataset,
             gold = gold_head[:, 1:].data.numpy()
 
         pred = pred.numpy()
-        parent_prob_table = parent_prob_table.numpy()
-
         tokens.extend(dataset.get_raw_sentence(sentence))
         poss.extend(dataset.get_raw_pos(pos))
         golds.extend(gold)
         preds.extend(pred)
         prob_tables.extend(parent_prob_table)
-        total_loss += loss.data[0] / seq_len
+        if compute_loss:
+            total_loss += loss.item() / seq_len
 
     return total_loss, tokens, poss, golds, preds, prob_tables

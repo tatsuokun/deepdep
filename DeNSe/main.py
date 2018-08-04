@@ -27,7 +27,13 @@ def main():
 
     gpu_id = args.gpu_id
     use_cuda = torch.cuda.is_available() and gpu_id > -1
+    if use_cuda:
+        device = torch.device('cuda:{}'.format(gpu_id))
+        torch.cuda.set_device(gpu_id)
+    else:
+        device = torch.device('cpu')
     use_pos = True  # TODO; move to args
+    use_elmo = True  # TODO; move to args
 
     ptb_train = load_conllx(config.train_file)
     ptb_dev = load_conllx(config.dev_file)
@@ -35,19 +41,24 @@ def main():
     ptb = {Phase.TRAIN: ptb_train, Phase.DEV: ptb_dev, Phase.TEST: ptb_test}
 
     data_train, data_dev, data_test = \
-        create_dataset(ptb, batch_size=config.batch_size, device=gpu_id)
+        create_dataset(ptb, batch_size=config.batch_size, device=device)
+
     parser = DependencyParser(vocab=data_train.vocab,
-                              n_pos=data_train.n_pos,
+                              pos=data_train.posset,
                               word_embed_size=config.word_embed_size,
                               pos_embed_size=config.pos_embed_size,
                               hidden_size=config.hidden_size,
                               use_pos=use_pos,
-                              use_cuda=use_cuda)
+                              use_cuda=use_cuda,
+                              use_elmo=use_elmo,
+                              inference=False)
     if use_cuda:
-        torch.cuda.set_device(gpu_id)
         parser = parser.cuda()
 
-    optimizer = optim.Adam(parser.parameters(), lr=config.learning_rate)
+    optim_params = parser.parameters()
+    if use_elmo:
+        optim_params = set(optim_params) - set(parser.elmo.parameters())
+    optimizer = optim.Adam(optim_params, lr=config.learning_rate)
 
     print('start training')
     for epoch in range(config.n_epochs):
@@ -87,11 +98,11 @@ def main():
 
     model_config_name = os.path.join(model_dir, 'model_config.toml')
     output_model_config(batch_size=config.batch_size,
-                        n_pos=data_train.n_pos,
                         word_embed_size=config.word_embed_size,
                         pos_embed_size=config.pos_embed_size,
                         hidden_size=config.hidden_size,
                         use_pos=use_pos,
+                        use_elmo=use_elmo,
                         learning_rate=config.learning_rate,
                         save_to=model_config_name)
 
@@ -101,3 +112,5 @@ def main():
     save_model(optimizer, optim_params_name)
     vocab_file_name = os.path.join(model_dir, 'vocab.pkl')
     save_vocab(data_train.vocab, vocab_file_name)
+    posset_file_name = os.path.join(model_dir, 'posset.pkl')
+    save_vocab(data_train.posset, posset_file_name)

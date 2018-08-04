@@ -12,7 +12,7 @@ def load_conllx(file_name: str):
         for line in f:
             contents = line.split('\t')
             if contents[0].isdigit():
-                token.append(contents[1])
+                token.append(contents[1].lower())
                 pos.append(contents[3])
                 head.append(int(contents[-1].strip()))
             else:
