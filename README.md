@@ -52,7 +52,7 @@ The trained model is saved in `deepdep/models`.
 | DEV | 94.17 | 94.18 | 94.90 |
 | TEST | 94.02 | 94.13 | 94.95 |
 
-The estimated training time is approximately 9 minutes for 5 iterations with the batch size equal to 16. (I used TITAN X)
+The training time is approximately 40-45 minutes for 5 iterations with the batch size equal to 16.
 ## Reference
 
 ```
