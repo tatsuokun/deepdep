@@ -52,7 +52,8 @@ The trained model is saved in `deepdep/models`.
 | DEV | 94.17 | 94.18 | 94.90 |
 | TEST | 94.02 | 94.13 | 94.95 |
 
-The training time is approximately 40-45 minutes for 5 iterations with the batch size equal to 16.
+The training time is approximately 30 minutes for 5 iterations with ELMo and the batch size equal to 16.
+(Without ELMo, the time would be around 10 mins)
 ## Reference
 
 ```
